@@ -2,45 +2,50 @@ from dash import Dash, html, dcc
 import pandas as pd
 import plotly.graph_objects as go
 
-def load_forest_land_use_data():
-    """Loads forest land use change data."""
-    return pd.read_csv("static/data/LandUseChange_Forest_1990_2016.csv")
+def load_ghg_emissions_data():
+    """Loads greenhouse gas emissions data."""
+    return pd.read_csv("static/data/GHG_emissions_Agri_Industry.csv")
 
-def prepare_forest_land_use_chart_data(data_df):
-    """Prepares data for the forest land use pie chart."""
-    land_use_data = data_df.iloc[0, 3:]  # land use columns start from the 4th column
-    labels = land_use_data.index.tolist()
-    values = land_use_data.values.tolist()
+def prepare_ghg_emissions_chart_data(data_df):
+    """Prepares data for the GHG emissions pie chart."""
+    # GHG emissions data start from the 'Total fertiliser emissions' column
+    ghg_emissions_data = data_df.iloc[0, 2:-1]
+    labels = ghg_emissions_data.index.tolist()
+    values = []
+    for value in ghg_emissions_data.values:
+        if isinstance(value, str):
+            value = float(value.replace(',', '').strip())
+        values.append(value)
     return labels, values
 
-def create_forest_land_use_pie_chart(labels, values):
-    """Creates a pie chart for forest land use data."""
+def create_ghg_emissions_pie_chart(labels, values):
+    """Creates a pie chart for GHG emissions data."""
     return go.Figure(data=[go.Pie(labels=labels, values=values)])
 
-def setup_dash_layout(app, fig_pie_chart):
-    """Sets up the layout of the Dash app."""
+def setup_ghg_emissions_layout(app, fig_pie_chart):
+    """Sets up the layout of the Dash app for GHG emissions visualization."""
     app.layout = html.Div(children=[
         html.Div([
-            dcc.Graph(id='forest-land-use-pie-chart', figure=fig_pie_chart)
+            dcc.Graph(id='ghg-emissions-pie-chart', figure=fig_pie_chart)
         ]),
         html.Div([  
-            html.H3(id='forest-land-use-pie-chart-description',children='Land uses converted from forestland since 1990.')
+            html.H3(id='ghg-emissions-pie-chart-description', children='GHG Emissions from the Agriculture Sector by Industry.')
         ])
-    ],id='forest-land-use-pie-chart-layout')
+    ], id='ghg-emissions-pie-chart-layout')
 
 def create_app():
     """Creates and configures the Dash app."""
     app = Dash(__name__)
 
     # Load and prepare data
-    data_df = load_forest_land_use_data()
-    labels, values = prepare_forest_land_use_chart_data(data_df)
+    data_df = load_ghg_emissions_data()
+    labels, values = prepare_ghg_emissions_chart_data(data_df)
 
     # Create pie chart
-    fig_pie_chart = create_forest_land_use_pie_chart(labels, values)
+    fig_pie_chart = create_ghg_emissions_pie_chart(labels, values)
 
     # Setup layout
-    setup_dash_layout(app, fig_pie_chart)
+    setup_ghg_emissions_layout(app, fig_pie_chart)
 
     return app
 
