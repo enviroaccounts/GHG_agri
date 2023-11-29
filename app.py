@@ -40,7 +40,7 @@ def create_ghg_emissions_pie_chart(labels, values):
     fig = go.Figure(data=[pie_chart])
     fig.update_layout(
         title={
-            'text': "GHG Emissions from the Agriculture Sector by Industry.",
+            'text': "GHG emissions from the agriculture sector by industry",
             'y': 0.08,  # Adjust the vertical position
             'x': 0.5,  # Center the title horizontally
             'xanchor': 'center',
